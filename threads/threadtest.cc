@@ -31,8 +31,12 @@ SimpleThread(int which)
     int num;
     
     for (num = 0; num < 5; num++) {
-	printf("*** thread %d looped %d times\n", which, num);
-        currentThread->Yield();
+        //--------------------lab1 newly add-----------------------
+        currentThread->setThreadId(num);
+        currentThread->setUserId(num);
+        //--------------------lab1 newly add-----------------------
+        printf("*** thread %d looped %d times\n", which, num);
+            currentThread->Yield();
     }
 }
 

@@ -80,6 +80,18 @@ class Thread {
     int* stackTop;			 // the current stack pointer
     void *machineState[MachineStateSize];  // all registers except for stackTop
 
+    // --------------------------lab1 newly add-----------------------------------
+    // 增加用户ID与线程ID
+    int userId;
+    int threadId;
+
+    void setUserId(int id){userId=id;}
+    int getUserId(){ return userId;}
+
+    void setThreadId(int id){threadId=id;}
+    int getThreadId(){ return threadId;}
+    // --------------------------lab1 newly add-----------------------------------
+
   public:
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
