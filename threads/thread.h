@@ -93,7 +93,7 @@ class Thread {
     void setThreadId(int id){threadId=id;}
     int getThreadId(){ return threadId;}
     // --------------------------lab1 newly add-----------------------------------
-    
+
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted

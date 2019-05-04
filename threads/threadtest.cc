@@ -35,7 +35,8 @@ SimpleThread(int which)
         currentThread->setThreadId(num);
         currentThread->setUserId(num);
         //--------------------lab1 newly add-----------------------
-        printf("*** thread %d looped %d times\n", which, num);
+        printf("*** thread %d threadId: %d userId: %d looped %d times\n",
+                which, currentThread->getThreadId(),urrentThread->getUserId(), num);
             currentThread->Yield();
     }
 }
