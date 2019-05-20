@@ -20,9 +20,9 @@
 #include "synch.h"
 #include "system.h"
 
-#define STACK_FENCEPOST 0xdeadbeef	// this is put at the top of the
-					// execution stack, for detecting 
-					// stack overflows
+#define STACK_FENCEPOST 0xdeadbeef    // this is put at the top of the
+// execution stack, for detecting
+// stack overflows
 
 //----------------------------------------------------------------------
 // Thread::Thread
@@ -32,8 +32,7 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* threadName)
-{
+Thread::Thread(char *threadName) {
     name = threadName;
     stackTop = NULL;
     stack = NULL;
@@ -55,13 +54,12 @@ Thread::Thread(char* threadName)
 //      as part of starting up Nachos.
 //----------------------------------------------------------------------
 
-Thread::~Thread()
-{
+Thread::~Thread() {
     DEBUG('t', "Deleting thread \"%s\"\n", name);
 
     ASSERT(this != currentThread);
     if (stack != NULL)
-	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
+        DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }
 
 //----------------------------------------------------------------------
@@ -84,19 +82,18 @@ Thread::~Thread()
 //	"arg" is a single argument to be passed to the procedure.
 //----------------------------------------------------------------------
 
-void 
-Thread::Fork(VoidFunctionPtr func, void *arg)
-{
+void
+Thread::Fork(VoidFunctionPtr func, void *arg) {
     DEBUG('t', "Forking thread \"%s\" with func = 0x%x, arg = %d\n",
-	  name, (int) func, (int*) arg);
-    
+          name, (int) func, (int *) arg);
+
     StackAllocate(func, arg);
 
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
-    scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts 
-					// are disabled!
+    scheduler->ReadyToRun(this);    // ReadyToRun assumes that interrupts
+    // are disabled!
     (void) interrupt->SetLevel(oldLevel);
-}    
+}
 
 //----------------------------------------------------------------------
 // Thread::CheckOverflow
@@ -114,13 +111,12 @@ Thread::Fork(VoidFunctionPtr func, void *arg)
 //----------------------------------------------------------------------
 
 void
-Thread::CheckOverflow()
-{
+Thread::CheckOverflow() {
     if (stack != NULL)
-#ifdef HOST_SNAKE			// Stacks grow upward on the Snakes
-	ASSERT(stack[StackSize - 1] == STACK_FENCEPOST);
+#ifdef HOST_SNAKE            // Stacks grow upward on the Snakes
+        ASSERT(stack[StackSize - 1] == STACK_FENCEPOST);
 #else
-	ASSERT((int) *stack == (int) STACK_FENCEPOST);
+        ASSERT((int) *stack == (int) STACK_FENCEPOST);
 #endif
 }
 
@@ -141,15 +137,14 @@ Thread::CheckOverflow()
 
 //
 void
-Thread::Finish ()
-{
-    (void) interrupt->SetLevel(IntOff);		
+Thread::Finish() {
+    (void) interrupt->SetLevel(IntOff);
     ASSERT(this == currentThread);
-    
+
     DEBUG('t', "Finishing thread \"%s\"\n", getName());
-    
+
     threadToBeDestroyed = currentThread;
-    Sleep();					// invokes SWITCH
+    Sleep();                    // invokes SWITCH
     // not reached
 }
 
@@ -172,19 +167,18 @@ Thread::Finish ()
 //----------------------------------------------------------------------
 
 void
-Thread::Yield ()
-{
+Thread::Yield() {
     Thread *nextThread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
-    
+
     ASSERT(this == currentThread);
-    
+
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    
+
     nextThread = scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	scheduler->ReadyToRun(this);
-	scheduler->Run(nextThread);
+        scheduler->ReadyToRun(this);
+        scheduler->Run(nextThread);
     }
     (void) interrupt->SetLevel(oldLevel);
 }
@@ -209,19 +203,18 @@ Thread::Yield ()
 //	off the ready list, and switching to it.
 //----------------------------------------------------------------------
 void
-Thread::Sleep ()
-{
+Thread::Sleep() {
     Thread *nextThread;
-    
+
     ASSERT(this == currentThread);
     ASSERT(interrupt->getLevel() == IntOff);
-    
+
     DEBUG('t', "Sleeping thread \"%s\"\n", getName());
 
     status = BLOCKED;
     while ((nextThread = scheduler->FindNextToRun()) == NULL)
-	interrupt->Idle();	// no one to run, wait for an interrupt
-        
+        interrupt->Idle();    // no one to run, wait for an interrupt
+
     scheduler->Run(nextThread); // returns when we've been signalled
 }
 
@@ -233,9 +226,14 @@ Thread::Sleep ()
 //	member function.
 //----------------------------------------------------------------------
 
-static void ThreadFinish()    { currentThread->Finish(); }
+static void ThreadFinish() { currentThread->Finish(); }
+
 static void InterruptEnable() { interrupt->Enable(); }
-void ThreadPrint(int arg){ Thread *t = (Thread *)arg; t->Print(); }
+
+void ThreadPrint(int arg) {
+    Thread *t = (Thread *) arg;
+    t->Print();
+}
 
 //----------------------------------------------------------------------
 // Thread::StackAllocate
@@ -250,8 +248,7 @@ void ThreadPrint(int arg){ Thread *t = (Thread *)arg; t->Print(); }
 //----------------------------------------------------------------------
 
 void
-Thread::StackAllocate (VoidFunctionPtr func, void *arg)
-{
+Thread::StackAllocate(VoidFunctionPtr func, void *arg) {
     stack = (int *) AllocBoundedArray(StackSize * sizeof(int));
 
 #ifdef HOST_SNAKE
@@ -264,7 +261,7 @@ Thread::StackAllocate (VoidFunctionPtr func, void *arg)
     // SPARC stack must contains at least 1 activation record to start with.
     stackTop = stack + StackSize - 96;
 #else  // HOST_MIPS  || HOST_i386
-    stackTop = stack + StackSize - 4;	// -4 to be on the safe side!
+    stackTop = stack + StackSize - 4;    // -4 to be on the safe side!
 #ifdef HOST_i386
     // the 80386 passes the return address on the stack.  In order for
     // SWITCH() to go to ThreadRoot when we switch to this thread, the
@@ -275,12 +272,12 @@ Thread::StackAllocate (VoidFunctionPtr func, void *arg)
 #endif  // HOST_SPARC
     *stack = STACK_FENCEPOST;
 #endif  // HOST_SNAKE
-    
-    machineState[PCState] = (int*)ThreadRoot;
-    machineState[StartupPCState] = (int*)InterruptEnable;
-    machineState[InitialPCState] = (int*)func;
+
+    machineState[PCState] = (int *) ThreadRoot;
+    machineState[StartupPCState] = (int *) InterruptEnable;
+    machineState[InitialPCState] = (int *) func;
     machineState[InitialArgState] = arg;
-    machineState[WhenDonePCState] = (int*)ThreadFinish;
+    machineState[WhenDonePCState] = (int *) ThreadFinish;
 }
 
 #ifdef USER_PROGRAM
@@ -299,15 +296,15 @@ void
 Thread::SaveUserState()
 {
     for (int i = 0; i < NumTotalRegs; i++)
-	userRegisters[i] = machine->ReadRegister(i);
+    userRegisters[i] = machine->ReadRegister(i);
 }
 
 //----------------------------------------------------------------------
 // Thread::RestoreUserState
 //	Restore the CPU state of a user program on a context switch.
 //
-//	Note that a user program thread has *two* sets of CPU registers -- 
-//	one for its state while executing user code, one for its state 
+//	Note that a user program thread has *two* sets of CPU registers --
+//	one for its state while executing user code, one for its state
 //	while executing kernel code.  This routine restores the former.
 //----------------------------------------------------------------------
 
@@ -315,6 +312,6 @@ void
 Thread::RestoreUserState()
 {
     for (int i = 0; i < NumTotalRegs; i++)
-	machine->WriteRegister(i, userRegisters[i]);
+    machine->WriteRegister(i, userRegisters[i]);
 }
 #endif
