@@ -200,7 +200,7 @@ Thread::Yield() {
 //	is called from the synchronization routines which must
 //	disable interrupts for atomicity.   We need interrupts off 
 //	so that there can't be a time slice between pulling the first thread
-//	off the ready list, and switching to it.
+//	3
 //----------------------------------------------------------------------
 void
 Thread::Sleep() {
