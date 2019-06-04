@@ -125,12 +125,12 @@ Lab1Exercise4_1()
 void
 TS()
 {
-    DEBUG('t', "TS Now");
+    DEBUG('t', "Entering TS");
 
     const char* TStoString[] = {"JUST_CREATED", "RUNNING", "READY", "BLOCKED"};
 
     printf("UID\tTID\tNAME\tPRI\tSTATUS\n");
-    for (int i = 0; i < MAX_THREAD_NUM; i++) { // checking flag
+    for (int i = 0; i < MAX_THREAD_NUM; i++) { // check pid flag
         if (tid_flag[i]) {
             printf("%d\t%d\t%s\t%d\t%s\n", tid_pointer[i]->getUserId(), tid_pointer[i]->getThreadId(), tid_pointer[i]->getName(), tid_pointer[i]->getPriority(), TStoString[tid_pointer[i]->getThreadStatus()]);
         }
@@ -709,6 +709,9 @@ Lab3ReaderWriter()
 void
 ThreadTest()
 {
+    // Lab3 Data structure test
+    // buffer* test_buffer = new buffer();
+
     switch (testnum) {
     case 1:
         ThreadTest1();
@@ -742,6 +745,25 @@ ThreadTest()
         printf("Lab3 Exercise4: Producer-consumer problem (Bounded-buffer problem)\n");
         printf("(add `-d c -rs` argument to show \"Context Switch\" and activate random timer)\n");
         Lab3ProducerConsumer();
+
+        /* Lab3 Data Structure Test
+
+        // Test PRODUCT struct
+        product item;
+        item.value = 87;
+        struct PRODUCT *new_item;
+        new_item = &item;
+        printf("%d\n\n", new_item->value);
+
+        // Test buffer class
+        item.value = 78;
+        // buffer* test_buffer = new buffer();
+        test_buffer->putItemIntoBuffer(&item);
+        test_buffer->printBuffer();
+        new_item = test_buffer->removeItemFromBuffer();
+        printf("%d\n\n", new_item->value);
+
+        */
         break;
     case 9:
         printf("Lab3 Challenge1: Barrier\n");
