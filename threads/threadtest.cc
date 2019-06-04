@@ -106,6 +106,7 @@ Lab1Exercise3()
 void
 Lab1Exercise4_1()
 {
+    
     DEBUG('t', "Entering Lab1Exercise4_1");
 
     const int max_threads = 130;
