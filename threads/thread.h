@@ -79,21 +79,16 @@ class Thread {
     // THEY MUST be in this position for SWITCH to work.
     int* stackTop;			 // the current stack pointer
     void *machineState[MachineStateSize];  // all registers except for stackTop
+    
+    // Lab1: Add thread ID and user ID
+    int tid;                            // Lab1: Add thread ID
+    int uid;                            // Lab1: Add user ID
+
+    // Lab2: priority of thread
+    int priority;                       // Lab2: Add priority
 
   public:
-
-    // --------------------------lab1 newly add-----------------------------------
-    // 增加用户ID与线程ID
-    int userId;
-    int threadId;
-
-    void setUserId(int id){userId=id;}
-    int getUserId(){ return userId;}
-
-    void setThreadId(int id){threadId=id;}
-    int getThreadId(){ return threadId;}
-    // --------------------------lab1 newly add-----------------------------------
-
+    Thread(char* debugName, int p);		// Lab2: initialize a Thread with priority
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted
@@ -115,6 +110,20 @@ class Thread {
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
 
+    // Lab1: methods to manipulate tid and uid
+    int getThreadId() { return (tid); }         // Lab1: Get thread ID
+    int getUserId() { return (uid); }           // Lab1: Get user ID
+    void setUserId(int userId) { uid = userId; }// Lab1: Set user ID
+    ThreadStatus getThreadStatus() { return (status); } // Lab1: Get thread status
+
+    // Lab2: priority of thread
+    int getPriority() { return (priority); }  // Lab2: Get priority
+    void setPriority(int p) { priority = p; } // Lab2: Set priority
+
+    // Lab6: system call
+    int getExitStatus() const { return exitStatus; } // Lab6: Exit system call
+    void setExitStatus(int val) { exitStatus = val;} // Lab6: Exit system call
+
   private:
     // some of the private data for this class is listed above
     
@@ -128,7 +137,10 @@ class Thread {
     					// Allocate a stack for thread.
 					// Used internally by Fork()
 
-#ifdef USER_PROGRAM
+    // Lab6: system call
+    int exitStatus; // Lab6: Exit system call
+
+#ifdef USER_PROGRAM // Lab4: Multi-thread user program
 // A thread running a user program actually has *two* sets of CPU registers -- 
 // one for its state while executing user code, one for its state 
 // while executing kernel code.
