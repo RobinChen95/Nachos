@@ -101,7 +101,7 @@ main(int argc, char **argv)
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
         argCount = 1;
         switch (argv[0][1]) {
-        case 'test':
+        case 'q':
             testnum = atoi(argv[1]);
             argCount++;
             break;
