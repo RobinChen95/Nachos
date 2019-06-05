@@ -711,7 +711,7 @@ void
 ThreadTest()
 {
     // Lab3 Data structure test
-     buffer* test_buffer = new buffer();
+    // buffer* test_buffer = new buffer();
 
     switch (testnum) {
     case 1:
@@ -747,7 +747,7 @@ ThreadTest()
         printf("(add `-d c -rs` argument to show \"Context Switch\" and activate random timer)\n");
         Lab3ProducerConsumer();
 
-         Lab3 Data Structure Test
+        /* Lab3 Data Structure Test
 
         // Test PRODUCT struct
         product item;
@@ -764,7 +764,7 @@ ThreadTest()
         new_item = test_buffer->removeItemFromBuffer();
         printf("%d\n\n", new_item->value);
 
-
+        */
         break;
     case 9:
         printf("Lab3 Challenge1: Barrier\n");
