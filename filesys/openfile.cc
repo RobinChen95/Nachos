@@ -147,7 +147,6 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
     bcopy(&buf[position - (firstSector * SectorSize)], into, numBytes);
     delete [] buf;
 
-    // Lab5: file header info update
     hdr->setVisitTime(getCurrentTime());
 
     return numBytes;

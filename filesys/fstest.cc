@@ -35,35 +35,26 @@ Copy(char *from, char *to)
     OpenFile* openFile;
     int amountRead, fileLength;
     char *buffer;
-
-// Open UNIX file
     if ((fp = fopen(from, "r")) == NULL) {	 
 	printf("Copy: couldn't open input file %s\n", from);
 	return;
     }
-
-// Figure out length of UNIX file
     fseek(fp, 0, 2);		
     fileLength = ftell(fp);
     fseek(fp, 0, 0);
-
-// Create a Nachos file of the same length
     DEBUG('f', "Copying file %s, size %d, to file %s\n", from, fileLength, to);
     if (!fileSystem->Create(to, fileLength)) {	 // Create Nachos file
 	printf("Copy: couldn't create output file %s\n", to);
 	fclose(fp);
 	return;
     }
-    
     openFile = fileSystem->Open(to);
     ASSERT_MSG(openFile != NULL, "Fail to open dest file in -cp");
-    
 // Copy the data in TransferSize chunks
     buffer = new char[TransferSize];
     while ((amountRead = fread(buffer, sizeof(char), TransferSize, fp)) > 0)
 	openFile->Write(buffer, amountRead);	
     delete [] buffer;
-
 // Close the UNIX and the Nachos files
     delete openFile;
     fclose(fp);

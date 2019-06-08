@@ -1,4 +1,4 @@
-// directory.cc 
+e// directory.cc
 //	Routines to manage a directory of file names.
 //
 //	The directory is a table of fixed length entries; each
@@ -139,7 +139,7 @@ Directory::Add(char *name, int newSector)
             table[i].sector = newSector;
         return TRUE;
 	}
-    return FALSE;	// no space.  Fix when we have extensible files.
+    return FALSE;
 }
 
 //----------------------------------------------------------------------

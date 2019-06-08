@@ -49,12 +49,12 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
         return FALSE; // not enough space
 
     if (numSectors < NumDirect) {
-        DEBUG('f', COLORED(OKGREEN, "Allocating using direct indexing only\n"));
+        DEBUG('f', COLORED(OKGREEN, "using direct indexing \n"));
         for (int i = 0; i < numSectors; i++)
             dataSectors[i] = freeMap->Find();
     } else {
 #ifndef INDIRECT_MAP
-        ASSERT_MSG(FALSE, "File size exceeded the maximum representation of the direct map");
+        ASSERT_MSG(FALSE, "File size overflow");
 #else
         if (numSectors < (NumDirect + LevelMapNum)) {
             DEBUG('f', COLORED(OKGREEN, "Allocating using single indirect indexing\n"));
@@ -114,7 +114,7 @@ FileHeader::Deallocate(BitMap *freeMap)
 {
 #ifndef INDIRECT_MAP
     for (int i = 0; i < numSectors; i++) {
-        ASSERT(freeMap->Test((int)dataSectors[i])); // ought to be marked!
+        ASSERT(freeMap->Test((int)dataSectors[i]));
         freeMap->Clear((int)dataSectors[i]);
     }
 #else
@@ -242,16 +242,12 @@ FileHeader::FileLength()
 void
 FileHeader::Print()
 {
-    int i, j, k; // current sector / byte position in a sector / current byte position in file
+    int i, j, k;
     char *data = new char[SectorSize];
-
-    // Lab5: additional file attributes
-    printf("------------ %s -------------\n", COLORED(GREEN, "FileHeader contents"));
     printf("File type: %s\n", fileType);
     printf("Created: %s", createdTime);
     printf("Modified: %s", modifiedTime);
     printf("Last visited: %s", lastVisitedTime);
-    // printf("\tPath: %s\n", filePath); // uncomment when we need it
     printf("File size: %d.  File blocks:\n", numBytes);
 #ifndef INDIRECT_MAP
     for (i = 0; i < numSectors; i++)
@@ -262,12 +258,12 @@ FileHeader::Print()
         synchDisk->ReadSector(dataSectors[i], data);
         for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++)
             printChar(data[j]);
-        printf("\n"); // Reach the end of sector or the end of file
+        printf("\n");
     }
 #else
-    int ii, iii; // For single / double indirect indexing
-    int singleIndirectIndex[LevelMapNum]; // used to restore the indexing map
-    int doubleIndirectIndex[LevelMapNum]; // used to restore the indexing map
+    int ii, iii;
+    int singleIndirectIndex[LevelMapNum];
+    int doubleIndirectIndex[LevelMapNum];
     printf("  Direct indexing:\n    ");
     for (i = 0; (i < numSectors) && (i < NumDirect); i++)
         printf("%d ", dataSectors[i]);
@@ -347,18 +343,18 @@ FileHeader::HeaderCreateInit(char* ext)
 //----------------------------------------------------------------------
 
 bool
-FileHeader::ExpandFileSize(BitMap *freeMap, int additionalBytes)
+FileHeader::DynamicFileSize(BitMap *freeMap, int additionalBytes)
 {
     ASSERT(additionalBytes > 0);
     numBytes += additionalBytes;
     int initSector = numSectors;
     numSectors = divRoundUp(numBytes, SectorSize);
     if (initSector == numSectors) {
-        return TRUE; // no need more sector
+        return TRUE;
     }
     int sectorsToExpand = numSectors - initSector;
     if (freeMap->NumClear() < sectorsToExpand) {
-        return FALSE; // no more space to allocate
+        return FALSE;
     }
 
     DEBUG('f', COLORED(OKGREEN, "Expanding file size for %d sectors (%d bytes)\n"), sectorsToExpand, additionalBytes);

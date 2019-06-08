@@ -104,6 +104,19 @@ SynchDisk::WriteSector(int sectorNumber, char* data)
 
 void
 SynchDisk::RequestDone()
-{ 
-    semaphore->V();
+{
+    int pos = -1;
+    for (int i = 0; i < 4; ++i) {
+        if(cache[i].valid==1&&cache[i].sector==sectornumber){
+            pos=i;
+            break
+        } else{
+            printf("hit cache\n");
+            cache[pos].LRU_tag= stats->totalTicks;
+            bcopy(cache[pos].data,data,SectorSize);
+            disk->HandleInterrupt();
+        }
+    }
 }
+
+

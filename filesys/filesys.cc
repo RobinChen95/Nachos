@@ -212,21 +212,21 @@ FileSystem::Create(char *name, int initialSize)
 #endif
 
     if (directory->Find(name) != -1)
-        success = FALSE; // file is already in directory
+        success = FALSE;
     else
     {
         freeMap = new BitMap(NumSectors);
         freeMap->FetchFrom(freeMapFile);
-        sector = freeMap->Find(); // find a sector to hold the file header
+        sector = freeMap->Find();
         if (sector == -1)
-            success = FALSE; // no free block for file header
+            success = FALSE;
         else if (!directory->Add(name, sector))
-            success = FALSE; // no space in directory
+            success = FALSE;
         else
         {
             hdr = new FileHeader;
             if (!hdr->Allocate(freeMap, initialSize))
-                success = FALSE; // no space on disk for data
+                success = FALSE;
             else
             {
                 success = TRUE;
@@ -235,8 +235,7 @@ FileSystem::Create(char *name, int initialSize)
                     hdr->HeaderCreateInit(DirFileExt);
                 else
 #endif
-                hdr->HeaderCreateInit(getFileExtension(name)); // Lab5: additional file attributes
-                // everthing worked, flush all changes back to disk
+                hdr->HeaderCreateInit(getFileExtension(name));
                 hdr->WriteBack(sector);
 #ifndef MULTI_LEVEL_DIR
                 directory->WriteBack(directoryFile);
@@ -291,9 +290,9 @@ FileSystem::Open(char *name)
 #endif
     sector = directory->Find(name);
     if (sector >= 0) 		
-	openFile = new OpenFile(sector);	// name was found in directory 
+	openFile = new OpenFile(sector);
     delete directory;
-    return openFile;				// return NULL if not found
+    return openFile;
 }
 
 //----------------------------------------------------------------------
